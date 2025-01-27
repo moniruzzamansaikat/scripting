@@ -21,24 +21,48 @@ class StaffController
         }
     }
 
-    // Handle the /staffs route and fetch users
+    // Handle the /staffs route with pagination
     public function index()
     {
-        // Prepare and execute the SQL query to fetch all users from the users table
-        $stmt = $this->pdo->prepare("SELECT first_name, last_name, email FROM users");
-        $stmt->execute();
+        // Get pagination parameters from query string
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 
-        // Fetch all results as an associative array
-        $staffs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // Ensure valid values
+        if ($page < 1) $page = 1;
+        if ($limit < 1) $limit = 10;
 
-        // Check if we have results
-        if ($staffs) {
-            // Return the data as JSON
+        $offset = ($page - 1) * $limit;
+
+        try {
+            // Count total users
+            $totalStmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM users");
+            $totalStmt->execute();
+            $totalUsers = $totalStmt->fetch(\PDO::FETCH_ASSOC)['total'];
+
+            // Prepare and execute the paginated query
+            $stmt = $this->pdo->prepare("SELECT first_name, last_name, email FROM users LIMIT :limit OFFSET :offset");
+            $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Fetch paginated results as an associative array
+            $staffs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Prepare the response
+            $response = [
+                'page'       => $page,
+                'limit'      => $limit,
+                'total'      => (int)$totalUsers,
+                'totalPages' => ceil($totalUsers / $limit),
+                'data'       => $staffs
+            ];
+
+            // Return JSON response
             header('Content-Type: application/json');
-            echo json_encode($staffs, JSON_PRETTY_PRINT);
-        } else {
-            // If no users found, return an empty array
-            echo json_encode([]);
+            echo json_encode($response, JSON_PRETTY_PRINT);
+        } catch (\PDOException $e) {
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 }
