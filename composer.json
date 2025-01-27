@@ -3,7 +3,10 @@
     "autoload": { 
         "psr-4": {
             "Src\\": "src/"
-        }
+        },
+        "files": [
+            "src\\Helpers\\helpers.php"
+        ]
     },
     "authors": [
         {
@@ -12,6 +15,7 @@
         }
     ],
     "require": {
-        "monolog/monolog": "^3.8"
+        "monolog/monolog": "^3.8",
+        "league/plates": "^3.6"
     }
 }

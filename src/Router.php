@@ -2,6 +2,8 @@
 
 namespace Src;
 
+use ErrorException;
+
 class Router
 {
     private $routes = [];
@@ -13,7 +15,6 @@ class Router
         $this->baseUrl = $config['base_url'];
     }
 
-    // Add a new route
     public function add($method, $route, $callback)
     {
         $this->routes[] = [
@@ -23,7 +24,6 @@ class Router
         ];
     }
 
-    // Match the request URI to the route
     public function match($method, $uri)
     {
         foreach ($this->routes as $route) {
@@ -35,18 +35,16 @@ class Router
         return null;
     }
 
-    // Dispatch the request to the correct route handler
     public function dispatch($method, $uri)
     {
         $uri = str_replace($this->baseUrl, '', $uri);  // This removes /testphp part
-
-        // $uri = ltrim($uri, '/');  // Ensures we get the clean route name, like 'about'
 
         $callback = $this->match($method, $uri);
 
         if ($callback) {
             call_user_func($callback);
         } else {
+            header("HTTP/1.0 404 Not Found");
             echo "404 Not Found";
         }
     }

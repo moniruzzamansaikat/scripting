@@ -1,18 +1,10 @@
 <?php
 
+use Src\Controllers\SiteController;
 use Src\Controllers\StaffController;
 
-$router->add('GET', '/', function () {
-    echo "Welcome to the Home Page!";
-});
-
-$router->add('GET', '/about', function () {
-    echo "This is the About Page!";
-});
-
-$router->add('GET', '/contact', function () {
-    echo "Contact us here!";
-});
-
+$router->add('GET', '/', [new SiteController(), 'home']);
+$router->add('GET', '/about', [new SiteController(), 'about']);
+$router->add('GET', '/contact', [new SiteController(), 'contact']);
+$router->add('POST', '/contact', [new SiteController(), 'submitContact']);
 $router->add('GET', '/staffs', [new StaffController(), 'index']);
-

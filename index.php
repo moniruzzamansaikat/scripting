@@ -6,6 +6,7 @@ use Src\Router;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+
 // Create a Monolog instance
 $log = new Logger('request_logger');
 
@@ -31,6 +32,4 @@ $requestTime = ($endTime - $startTime) * 1000;
 
 $awesome = str_replace($baseUrl, '', $uri);
 
-// Log the request time using Monolog
-$log->info("Request to {$awesome} took " . round($requestTime, 2) . " ms");
-
+$log->info(strtoupper($method) . ": {$awesome} took " . round($requestTime, 2) . " ms");
