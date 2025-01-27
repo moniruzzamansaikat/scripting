@@ -74,3 +74,4 @@
 [2025-01-27T17:41:34.250072+00:00] request_logger.INFO: GET: /staffs took 30.42 ms [] []
 [2025-01-27T17:41:34.480789+00:00] request_logger.INFO: GET: /staffs took 5.05 ms [] []
 [2025-01-27T17:41:34.658511+00:00] request_logger.INFO: GET: /staffs took 4.98 ms [] []
+[2025-01-27T17:42:09.004921+00:00] request_logger.INFO: GET: /staffs took 27.97 ms [] []
