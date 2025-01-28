@@ -24,7 +24,7 @@ class SiteController extends Controller
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . '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',
+            'Authorization: Bearer ' . '-------------------------------',
             'Content-Type: application/json'
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
