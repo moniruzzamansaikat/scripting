@@ -18,7 +18,7 @@ class StaffController extends Controller
     {
         $pageTitle = 'Staffs';
 
-        $users = $this->db()->select('users', ['first_name', 'id', 'last_name', 'email', 'phone', 'gender', 'address'], 15, 10);
+        $users = $this->db()->paginate('users', ['first_name', 'id', 'last_name', 'email', 'phone', 'gender', 'address'], 15, 10);
 
         $this->render('index', compact('pageTitle', 'users'));
     }
