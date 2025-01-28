@@ -8,6 +8,7 @@ $authMiddleware = function () {
 };
 
 $router->add('GET', '/', [new SiteController(), 'home']);
+$router->add('POST', '/generate', [new SiteController(), 'processPrompt']);
 $router->add('GET', '/about', [new SiteController(), 'about']);
 $router->add('GET', '/contact', [new SiteController(), 'contact']);
 $router->add('POST', '/contact', [new SiteController(), 'submitContact']);
