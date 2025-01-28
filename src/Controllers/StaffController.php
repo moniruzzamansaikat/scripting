@@ -2,24 +2,17 @@
 
 namespace Src\Controllers;
 
-use Src\Database;
-
 class StaffController extends Controller
 {
-    private $db;
-
-    public function __construct()
-    {
-        $this->db = Database::getInstance();
-        parent::__construct();
-    }
-
     public function index()
     {
-        $pageTitle = 'Staffs';
+        $pageTitle    = 'Staffs';
+        $currentPage  = $_GET['page'] ?? 1;
+        $perPage      = 15;
+        $users        = $this->db()->paginate('users', ['first_name', 'id', 'last_name', 'email', 'phone', 'gender', 'address'], $perPage, $currentPage);
+        $totalRecords = $this->db()->count('users');
+        $totalPages   = ceil($totalRecords / $perPage);
 
-        $users = $this->db()->paginate('users', ['first_name', 'id', 'last_name', 'email', 'phone', 'gender', 'address'], 15, 10);
-
-        $this->render('index', compact('pageTitle', 'users'));
+        $this->render('index', compact('pageTitle', 'users', 'currentPage', 'totalPages'));
     }
 }

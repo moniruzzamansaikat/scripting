@@ -131,9 +131,9 @@ class Database
      */
     public function count(string $table): int
     {
-        $sql = "SELECT COUNT(*) FROM $table";
+        $sql = "SELECT COUNT(*) as total FROM $table";
         $stmt = $this->pdo->query($sql);
-        return (int)$stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
     /**
