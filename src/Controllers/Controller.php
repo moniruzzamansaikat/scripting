@@ -40,4 +40,18 @@ class Controller
 
         return @$this->postData->$key ?? null;
     }
+
+    public function json($data = [], $statusCode = 200, $headers = [])
+    {
+        header('Content-Type: application/json', true);
+
+        foreach ($headers as $key => $value) {
+            header("$key: $value");
+        }
+
+        http_response_code($statusCode);
+
+        echo json_encode($data);
+        exit();
+    }
 }
