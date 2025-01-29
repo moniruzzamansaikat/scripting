@@ -2,6 +2,7 @@
 
 namespace Src\Controllers;
 
+use Src\Attributes\Route;
 use Src\Database;
 
 class SiteController extends Controller
@@ -102,6 +103,7 @@ class SiteController extends Controller
         }
     }
 
+    #[Route('GET', '/')]
     public function home()
     {
         $pageTitle = 'Home';
@@ -111,6 +113,7 @@ class SiteController extends Controller
         $this->render('home', compact('pageTitle', 'totalUsers'));
     }
 
+    #[Route('GET', '/about')]
     public function about()
     {
         $pageTitle = 'About';
@@ -118,6 +121,7 @@ class SiteController extends Controller
         $this->render('About', compact('pageTitle'));
     }
 
+    #[Route('GET', '/contact')]
     public function contact()
     {
         $pageTitle = 'Contact';
@@ -125,6 +129,7 @@ class SiteController extends Controller
         $this->render('contact', compact('pageTitle'));
     }
 
+    #[Route('POST', '/contact')]
     public function submitContact()
     {
         $name    = $this->get('name');

@@ -3,6 +3,9 @@
 namespace Src;
 
 use ErrorException;
+use ReflectionClass;
+use ReflectionMethod;
+use Src\Attributes\Route;
 
 class Router
 {
@@ -15,6 +18,34 @@ class Router
     {
         $config = require __DIR__ . '/../config/app.php';
         $this->baseUrl = $config['base_url'];
+    }
+
+    public function registerControllersAutomatically()
+    {
+        $controllerNamespace = 'Src\\Controllers\\';
+        $controllerPath = __DIR__ . '/Controllers/';
+
+        foreach (glob($controllerPath . '*.php') as $file) {
+            $className = basename($file, '.php');
+            $fullClassName = $controllerNamespace . $className;
+
+            if (class_exists($fullClassName)) {
+                $controllerInstance = new $fullClassName();
+                $this->registerRoutesFromAttributes($controllerInstance);
+            }
+        }
+    }
+
+    private function registerRoutesFromAttributes($controller)
+    {
+        $reflectionClass = new ReflectionClass($controller);
+
+        foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($method->getAttributes(Route::class) as $attribute) {
+                $routeInstance = $attribute->newInstance();
+                $this->add($routeInstance->method, $routeInstance->path, [$controller, $method->getName()]);
+            }
+        }
     }
 
     /**

@@ -1,23 +1,20 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php'; // Ensure the path to Composer's autoloader is correct
+require __DIR__ . '/vendor/autoload.php'; 
 
 use Src\Router;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-
-// Create a Monolog instance
 $log = new Logger('request_logger');
 
-// Create a stream handler to log to a file
 $log->pushHandler(new StreamHandler(__DIR__ . '/logs/request_time.log', Logger::INFO));
 
 $startTime = microtime(true);
 
 $router = new Router();
+$router->registerControllersAutomatically();
 
-require __DIR__ . '/routes.php';
 $config = require __DIR__ . '/config/app.php';
 $baseUrl = $config['base_url'];
 

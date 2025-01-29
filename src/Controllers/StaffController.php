@@ -2,8 +2,12 @@
 
 namespace Src\Controllers;
 
+use Src\Attributes\Route;
+
 class StaffController extends Controller
 {
+
+    #[Route('GET', '/staffs')]
     public function index()
     {
         $pageTitle    = 'Staffs';
