@@ -5,6 +5,7 @@ namespace Src;
 use ErrorException;
 use ReflectionClass;
 use ReflectionMethod;
+use Src\Attributes\Auth;
 use Src\Attributes\Route;
 
 class Router
@@ -45,6 +46,18 @@ class Router
                 $routeInstance = $attribute->newInstance();
                 $this->add($routeInstance->method, $routeInstance->path, [$controller, $method->getName()]);
             }
+        }
+    }
+
+    private function applyAuthAttribute($callback)
+    {
+        $reflection = new ReflectionMethod($callback[0], $callback[1]); // Get the controller and method
+
+        foreach ($reflection->getAttributes(Auth::class) as $attribute) {
+            $auth = $attribute->newInstance();
+
+            // Call the redirect logic in the Auth attribute (for example)
+            $auth->handle();
         }
     }
 
@@ -136,6 +149,8 @@ class Router
 
             // Apply middleware
             $this->applyMiddleware($middleware);
+
+            $this->applyAuthAttribute($callback);
 
             // Pass params to the callback
             if (is_array($callback) && is_callable($callback)) {

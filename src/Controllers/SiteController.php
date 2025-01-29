@@ -144,4 +144,9 @@ class SiteController extends Controller
 
         redirect('/');
     }
+
+    #[Route('GET', '/login')]
+    public function logiN() {
+        echo 'login pager';
+    }
 }

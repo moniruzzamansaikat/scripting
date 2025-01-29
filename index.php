@@ -6,6 +6,8 @@ use Src\Router;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+session_start();
+
 $log = new Logger('request_logger');
 
 $log->pushHandler(new StreamHandler(__DIR__ . '/logs/request_time.log', Logger::INFO));

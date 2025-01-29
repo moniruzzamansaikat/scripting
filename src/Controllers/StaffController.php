@@ -2,6 +2,7 @@
 
 namespace Src\Controllers;
 
+use Src\Attributes\Auth;
 use Src\Attributes\Route;
 use Src\Models\User;
 
@@ -16,6 +17,7 @@ class StaffController extends Controller
         $this->json($users);
     }
 
+    #[Auth]
     #[Route('GET', '/staffs')]
     public function index()
     {
