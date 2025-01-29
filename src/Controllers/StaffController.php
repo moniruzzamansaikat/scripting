@@ -6,14 +6,6 @@ use Src\Database;
 
 class StaffController extends Controller
 {
-    private $db;
-
-    public function __construct()
-    {
-        $this->db = Database::getInstance();
-        parent::__construct();
-    }
-
     public function index()
     {
         $pageTitle = 'Staffs';
