@@ -95,17 +95,10 @@ class Database
         return $this->offset($skip);
     }
 
-    /**
-     * Add WHERE clause to the query.
-     *
-     * @param string $condition
-     * @param array $params
-     * @return self
-     */
-    public function where(string $condition, array $params = []): self
+    public function where(string $column, $operator = '=', $value = null): self
     {
-        $this->query .= " WHERE $condition";
-        $this->params = array_merge($this->params, $params);
+        $this->query .= " WHERE $column $operator :$column";
+        $this->params = array_merge($this->params, ["$column" => $value]);
         return $this;
     }
 
@@ -116,10 +109,15 @@ class Database
      */
     public function get(): array
     {
-        // Check for any placeholders in the query and bind parameters correctly
         $stmt = $this->pdo->prepare($this->query);
         $stmt->execute($this->params);
         return $stmt->fetchAll();
+    }
+
+    
+    public function first()
+    {
+        return $this->get()[0] ?? null;
     }
 
     /**

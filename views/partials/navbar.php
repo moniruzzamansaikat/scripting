@@ -12,9 +12,6 @@
                     <a class="nav-link active" href="<?= url('/') ?>">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= url('/users') ?>">Users</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="<?= url('/staffs') ?>">Staffs</a>
                 </li>
                 <li class="nav-item">

@@ -1,9 +1,9 @@
 <?php $this->layout('layouts/main', ['title' => $pageTitle]) ?>
 
+<section class="py-5">
+    <h2>Hey, <?= @$user->first_name ?></h2>
 
-<h1>Total Users: <?= $totalUsers ?></h1>
+    <a href="<?= url('/logout') ?>" class="btn btn-danger">Logout</a>
 
-<form method="POST" action="<?= url('/generate') ?>">
-    <input type="text" name="prompt" class="form-control" />
-    <button class="btn btn-primary">Submit</button>
-</form>
+
+</section>

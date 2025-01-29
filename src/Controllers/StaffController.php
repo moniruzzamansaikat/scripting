@@ -8,10 +8,10 @@ use Src\Models\User;
 
 class StaffController extends Controller
 {
+    #[Auth]
     #[Route('GET', '/users')]
     public function users()
     {
-        // $users = $this->db()->from('users')->limit(10)->get();
         $users = (new User)->limit(10)->get();
 
         $this->json($users);

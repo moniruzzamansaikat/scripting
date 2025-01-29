@@ -1,5 +1,15 @@
 <?php
 
+use Src\Cache;
+
+function user()
+{
+    if ($_SESSION['user_id']) {
+        return Cache::get("user_{$_SESSION['user_id']}");
+    }
+
+    return null;
+}
 
 function systemInfo()
 {

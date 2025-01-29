@@ -107,10 +107,9 @@ class SiteController extends Controller
     public function home()
     {
         $pageTitle = 'Home';
+        $user      = user();
 
-        $totalUsers = $this->db()->from('users')->count();
-
-        $this->render('home', compact('pageTitle', 'totalUsers'));
+        $this->render('home', compact('pageTitle', 'user'));
     }
 
     #[Route('GET', '/about')]
@@ -143,10 +142,5 @@ class SiteController extends Controller
         ]);
 
         redirect('/');
-    }
-
-    #[Route('GET', '/login')]
-    public function logiN() {
-        echo 'login pager';
     }
 }

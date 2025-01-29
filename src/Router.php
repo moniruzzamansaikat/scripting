@@ -6,6 +6,7 @@ use ErrorException;
 use ReflectionClass;
 use ReflectionMethod;
 use Src\Attributes\Auth;
+use Src\Attributes\Guest;
 use Src\Attributes\Route;
 
 class Router
@@ -57,6 +58,17 @@ class Router
             $auth = $attribute->newInstance();
 
             // Call the redirect logic in the Auth attribute (for example)
+            $auth->handle();
+        }
+    }
+
+    private function applyGuestAttribute($callback)
+    {
+        $reflection = new ReflectionMethod($callback[0], $callback[1]);
+
+        foreach ($reflection->getAttributes(Guest::class) as $attribute) {
+            $auth = $attribute->newInstance();
+
             $auth->handle();
         }
     }
@@ -151,6 +163,8 @@ class Router
             $this->applyMiddleware($middleware);
 
             $this->applyAuthAttribute($callback);
+
+            $this->applyGuestAttribute($callback);
 
             // Pass params to the callback
             if (is_array($callback) && is_callable($callback)) {
