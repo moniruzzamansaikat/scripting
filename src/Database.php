@@ -11,6 +11,9 @@ class Database
     private $pdo;
     private static $instance;
 
+    private $query;
+    private $params;
+
     private function __construct()
     {
         try {
@@ -21,6 +24,10 @@ class Database
             );
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+
+            // Initialize the query and parameters for builder pattern
+            $this->query = '';
+            $this->params = [];
         } catch (PDOException $e) {
             throw new Exception('Database connection failed: ' . $e->getMessage());
         }
@@ -40,57 +47,114 @@ class Database
     }
 
     /**
-     * Get the PDO connection.
+     * Initialize query with a base select statement.
      *
-     * @return PDO
+     * @param string $table
+     * @param array $columns
+     * @return self
      */
-    public function getConnection(): PDO
+    public function from(string $table, array $columns = ['*']): self
     {
-        return $this->pdo;
+        $columnsList = implode(',', $columns);
+        $this->query = "SELECT $columnsList FROM $table";
+        return $this;
     }
 
     /**
-     * Execute a query and return all results.
+     * Add LIMIT clause.
      *
-     * @param string $sql
+     * @param int $limit
+     * @return self
+     */
+    public function limit(int $limit): self
+    {
+        $this->query .= " LIMIT $limit"; // Directly interpolate the limit value
+        return $this;
+    }
+
+    /**
+     * Add OFFSET clause.
+     *
+     * @param int $offset
+     * @return self
+     */
+    public function offset(int $offset): self
+    {
+        $this->query .= " OFFSET $offset"; // Directly interpolate the offset value
+        return $this;
+    }
+
+    /**
+     * Add SKIP clause (same as OFFSET in SQL).
+     *
+     * @param int $skip
+     * @return self
+     */
+    public function skip(int $skip): self
+    {
+        return $this->offset($skip);
+    }
+
+    /**
+     * Add WHERE clause to the query.
+     *
+     * @param string $condition
      * @param array $params
+     * @return self
+     */
+    public function where(string $condition, array $params = []): self
+    {
+        $this->query .= " WHERE $condition";
+        $this->params = array_merge($this->params, $params);
+        return $this;
+    }
+
+    /**
+     * Execute the query and return the results.
+     *
      * @return array
      */
-    public function query(string $sql, array $params = []): array
+    public function get(): array
     {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
+        // Check for any placeholders in the query and bind parameters correctly
+        $stmt = $this->pdo->prepare($this->query);
+        $stmt->execute($this->params);
         return $stmt->fetchAll();
     }
 
     /**
-     * Execute a query and return the number of affected rows.
+     * Count the number of rows matching the query.
      *
-     * @param string $sql
-     * @param array $params
      * @return int
      */
-    public function execute(string $sql, array $params = []): int
+    public function count(): int
     {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
+        $stmt = $this->pdo->prepare($this->query);
+        $stmt->execute($this->params);
         return $stmt->rowCount();
     }
 
     /**
-     * Insert data into a table and return the last insert ID.
+     * Insert a record into a table.
      *
      * @param string $table
      * @param array $data
-     * @return int
+     * @return bool
      */
-    public function insert(string $table, array $data): int
+    public function insert(string $table, array $data): bool
     {
         $columns = implode(',', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-        $this->execute($sql, $data);
-        return $this->pdo->lastInsertId();
+        $placeholders = ':' . implode(',:', array_keys($data));
+        $this->query = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+
+        // Bind values dynamically
+        $this->params = array_combine(
+            array_map(fn($key) => ':' . $key, array_keys($data)),
+            array_values($data)
+        );
+
+        $stmt = $this->pdo->prepare($this->query);
+        return $stmt->execute($this->params);
     }
 
     /**
@@ -100,13 +164,21 @@ class Database
      * @param array $data
      * @param string $condition
      * @param array $params
-     * @return int
+     * @return bool
      */
-    public function update(string $table, array $data, string $condition, array $params): int
+    public function update(string $table, array $data, string $condition, array $params = []): bool
     {
-        $set = implode(', ', array_map(fn($key) => "$key = :$key", array_keys($data)));
-        $sql = "UPDATE $table SET $set WHERE $condition";
-        return $this->execute($sql, array_merge($data, $params));
+        $setClause = implode(',', array_map(fn($col) => "$col = :$col", array_keys($data)));
+        $this->query = "UPDATE $table SET $setClause WHERE $condition";
+
+        // Bind values dynamically
+        $this->params = array_merge(
+            array_combine(array_map(fn($col) => ":$col", array_keys($data)), array_values($data)),
+            $params
+        );
+
+        $stmt = $this->pdo->prepare($this->query);
+        return $stmt->execute($this->params);
     }
 
     /**
@@ -115,115 +187,14 @@ class Database
      * @param string $table
      * @param string $condition
      * @param array $params
-     * @return int
-     */
-    public function delete(string $table, string $condition, array $params): int
-    {
-        $sql = "DELETE FROM $table WHERE $condition";
-        return $this->execute($sql, $params);
-    }
-
-    /**
-     * Count total rows in a table.
-     *
-     * @param string $table
-     * @return int
-     */
-    public function count(string $table): int
-    {
-        $sql = "SELECT COUNT(*) as total FROM $table";
-        $stmt = $this->pdo->query($sql);
-        return (int) $stmt->fetchColumn();
-    }
-
-    /**
-     * Select records with pagination.
-     *
-     * @param string $table
-     * @param array $columns
-     * @param int $perPage
-     * @param int $currentPage
-     * @return array
-     */
-    public function paginate(string $table, array $columns, int $perPage, int $currentPage): array
-    {
-        $offset = ($currentPage - 1) * $perPage;
-        $columnsList = implode(',', $columns);
-        $sql = "SELECT $columnsList FROM $table LIMIT :limit OFFSET :offset";
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * Find a single record by condition.
-     *
-     * @param string $table
-     * @param string $condition
-     * @param array $params
-     * @return object|null
-     */
-    public function find(string $table, string $condition, array $params): ?object
-    {
-        $sql = "SELECT * FROM $table WHERE $condition LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetch() ?: null;
-    }
-
-    /**
-     * Find all records in a table.
-     *
-     * @param string $table
-     * @return array
-     */
-    public function findAll(string $table): array
-    {
-        $sql = "SELECT * FROM $table";
-        return $this->query($sql);
-    }
-
-    /**
-     * Check if a record exists.
-     *
-     * @param string $table
-     * @param string $condition
-     * @param array $params
      * @return bool
      */
-    public function exists(string $table, string $condition, array $params): bool
+    public function delete(string $table, string $condition, array $params = []): bool
     {
-        $sql = "SELECT 1 FROM $table WHERE $condition LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return (bool)$stmt->fetch();
-    }
+        $this->query = "DELETE FROM $table WHERE $condition";
+        $this->params = $params;
 
-    /**
-     * Begin a transaction.
-     */
-    public function beginTransaction(): void
-    {
-        $this->pdo->beginTransaction();
-    }
-
-    /**
-     * Commit a transaction.
-     */
-    public function commit(): void
-    {
-        $this->pdo->commit();
-    }
-
-    /**
-     * Rollback a transaction.
-     */
-    public function rollback(): void
-    {
-        $this->pdo->rollBack();
+        $stmt = $this->pdo->prepare($this->query);
+        return $stmt->execute($this->params);
     }
 }

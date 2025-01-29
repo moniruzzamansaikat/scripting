@@ -34,47 +34,44 @@
     </table>
 
     <!-- Pagination -->
+    <!--
     <nav aria-label="Page navigation example" class="d-flex justify-content-end">
         <ul class="pagination pagination-sm">
-            <!-- Previous Page Link -->
             <li class="page-item <?= $currentPage == 1 ? 'disabled' : '' ?>">
                 <a class="page-link" href="?page=<?= $currentPage - 1 ?>" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
 
-            <!-- Page Links -->
             <?php
-            // Define the range of pages to show around the current page
-            $range = 2; // Number of pages to show before and after the current page
-            $start = max(1, $currentPage - $range);
-            $end = min($totalPages, $currentPage + $range);
+            //     $range = 2; // Number of pages to show before and after the current page
+            // $start = max(1, $currentPage - $range);
+            // $end = min($totalPages, $currentPage + $range);
 
-            // Show the first page link if not already in the range
-            if ($start > 1) {
-                echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
-                if ($start > 2) {
-                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
-                }
-            }
+            // // Show the first page link if not already in the range
+            // if ($start > 1) {
+            //     echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+            //     if ($start > 2) {
+            //         echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            //     }
+            // }
 
-            // Generate page links within the range
-            for ($page = $start; $page <= $end; $page++) {
-                echo '<li class="page-item ' . ($page == $currentPage ? 'active' : '') . '">
-                    <a class="page-link" href="?page=' . $page . '">' . $page . '</a>
-                  </li>';
-            }
+            // // Generate page links within the range
+            // for ($page = $start; $page <= $end; $page++) {
+            //     echo '<li class="page-item ' . ($page == $currentPage ? 'active' : '') . '">
+            //         <a class="page-link" href="?page=' . $page . '">' . $page . '</a>
+            //       </li>';
+            // }
 
-            // Show the last page link if not already in the range
-            if ($end < $totalPages) {
-                if ($end < $totalPages - 1) {
-                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
-                }
-                echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '">' . $totalPages . '</a></li>';
-            }
+            // // Show the last page link if not already in the range
+            // if ($end < $totalPages) {
+            //     if ($end < $totalPages - 1) {
+            //         echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            //     }
+            //     echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '">' . $totalPages . '</a></li>';
+            // }
             ?>
 
-            <!-- Next Page Link -->
             <li class="page-item <?= $currentPage == $totalPages ? 'disabled' : '' ?>">
                 <a class="page-link" href="?page=<?= $currentPage + 1 ?>" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
@@ -82,4 +79,5 @@
             </li>
         </ul>
     </nav>
+        -->
 </section>

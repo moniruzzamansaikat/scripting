@@ -108,7 +108,7 @@ class SiteController extends Controller
     {
         $pageTitle = 'Home';
 
-        $totalUsers = $this->db()->count('users');
+        $totalUsers = $this->db()->from('users')->count();
 
         $this->render('home', compact('pageTitle', 'totalUsers'));
     }
