@@ -2,15 +2,27 @@
 
 namespace Src\Controllers;
 
-use Src\Database;
+use Src\Attributes\Auth;
+use Src\Attributes\Route;
+use Src\Models\User;
 
 class StaffController extends Controller
 {
+    #[Route('GET', '/users')]
+    public function users()
+    {
+        // $users = $this->db()->from('users')->limit(10)->get();
+        $users = (new User)->limit(10)->get();
+
+        $this->json($users);
+    }
+
+    #[Auth]
+    #[Route('GET', '/staffs')]
     public function index()
     {
-        $pageTitle = 'Staffs';
-
-        $users = $this->db()->select('users', ['first_name', 'id', 'last_name', 'email', 'phone', 'gender', 'address'], 15, 10);
+        $pageTitle = 'Users';
+        $users        = $this->db()->from('users')->limit(15)->get();
 
         $this->render('index', compact('pageTitle', 'users'));
     }

@@ -3,6 +3,6 @@
 return [
     'host'     => 'localhost',
     'dbname'   => 'testphp',
-    'username' => 'root',
-    'password' => ''
+    'username' => 'admin',
+    'password' => 'admin1'
 ];
