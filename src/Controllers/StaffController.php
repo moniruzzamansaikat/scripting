@@ -16,7 +16,7 @@ class StaffController extends Controller
 
         $this->json($users);
     }
-
+    
     #[Auth]
     #[Route('GET', '/staffs')]
     public function index()

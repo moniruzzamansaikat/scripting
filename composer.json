@@ -16,6 +16,8 @@
     ],
     "require": {
         "monolog/monolog": "^3.8",
-        "league/plates": "^3.6"
+        "league/plates": "^3.6",
+        "pimple/pimple": "^3.5",
+        "kint-php/kint": "^6.0"
     }
 }
