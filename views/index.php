@@ -16,6 +16,7 @@
                 <th scope="col">Last Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Phone</th>
+                <th scope="col">Adress</th>
                 <th scope="col" class="text-end">Address</th>
             </tr>
         </thead>
@@ -27,7 +28,10 @@
                     <td><?= $user->last_name ?></td>
                     <td><?= $user->email ?></td>
                     <td><?= $user->phone ?></td>
-                    <td class="text-end"><?= $user->address ?></td>
+                    <td><?= $user->address ?></td>
+                    <td class="text-end">
+                        <button class="btn btn-primary btn-sm btnEdit" data-id="<?= $user->id ?>">edit</button>
+                    </td>
                 </tr>
             <?php endforeach ?>
         </tbody>
@@ -81,3 +85,43 @@
     </nav>
         -->
 </section>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Modal</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2>Edit your data</h2>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php $this->push('scripts'); ?>
+<script src="<?= asset('/js/moni.js') ?>"></script>
+
+<script>
+    (function() {
+        'use strict';
+
+        moni('.btnEdit').on('click', function() {
+            console.log(moni('.modal-title'));
+            
+            
+            const id = moni(this).data('id');
+            
+            moni('.modal-title').html(`Editing data for id ${id}`);
+
+            moni('#editModal').show();
+        });
+    })();
+</script>
+
+<?php $this->end(); ?>
